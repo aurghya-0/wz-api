@@ -1,5 +1,6 @@
 // server.js
 const express = require("express");
+const auth = require("./auth");
 const app = express();
 
 app.get("/", (req, res) => {
