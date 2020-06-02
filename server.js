@@ -8,7 +8,7 @@ const lifeTimeRouter = require("./routers/lifetime");
 //   return res.send("Hello world");
 // });
 
-app.get("/lifetime", lifeTimeRouter);
+app.use("/lifetime", lifeTimeRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
