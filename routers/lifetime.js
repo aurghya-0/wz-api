@@ -25,7 +25,6 @@ const allStatsMiddleWare = async (req, res, next) => {
 const statsMiddleWare = async (req, res, next) => {
   const { user } = req.query;
   const { type } = req.params;
-  console.log(type);
   try {
     let stringifiedData = await redisClient.getAsync(user);
     if (stringifiedData) {

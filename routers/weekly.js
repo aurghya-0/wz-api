@@ -1,7 +1,11 @@
-const express = require("express");
+var express = require("express");
 const weekly = express.Router();
 const redisClient = require("../redis-client");
-const loginHelper = require("../helpers/login");
+const API = require("call-of-duty-api")({
+  platform: "battle",
+  ratelimit: { maxRequests: 2, perMilliseconds: 1000, maxRPS: 2 },
+});
+const auth = require("../auth");
 
 const weeklyMiddleware = async (req, res, next) => {
   const { user } = req.query;
@@ -9,7 +13,7 @@ const weeklyMiddleware = async (req, res, next) => {
     let stringifiedData = await redisClient.getAsync(user);
     if (stringifiedData) {
       const data = JSON.parse(stringifiedData);
-      // send weekly data
+      res.send(data["weekly"]);
     } else {
       next();
     }
@@ -18,13 +22,16 @@ const weeklyMiddleware = async (req, res, next) => {
   }
 };
 
-weekly.use("/", weeklyMiddleware);
-weekly.route("/", async (req, res) => {
+weekly.get("/", weeklyMiddleware, async (req, res) => {
   const { user } = req.query;
   try {
-    const data = await loginHelper(user);
-    // check if weekly data exists and send else send error
+    await API.login(auth.username, auth.password);
+    let data = await API.MWwz(user);
+    await redisClient.setAsync(user, 3600, JSON.stringify(data));
+    res.send(data["weekly"]);
   } catch (e) {
     res.send(e);
   }
 });
+
+module.exports = weekly;

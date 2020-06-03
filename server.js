@@ -2,13 +2,10 @@
 var express = require("express");
 var app = express();
 const lifeTimeRouter = require("./routers/lifetime");
-
-// app.get("/", (req, res) => {
-//   console.log(req.query);
-//   return res.send("Hello world");
-// });
+const weeklyRouter = require("./routers/weekly");
 
 app.use("/lifetime", lifeTimeRouter);
+app.use("/weekly", weeklyRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
