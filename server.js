@@ -1,6 +1,6 @@
 // server.js
-const express = require("express");
-const app = express();
+var express = require("express");
+var app = express();
 const lifeTimeRouter = require("./routers/lifetime");
 
 // app.get("/", (req, res) => {

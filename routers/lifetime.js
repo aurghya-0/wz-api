@@ -1,68 +1,38 @@
-const express = require("express");
+var express = require("express");
 const lifetimeRouter = express.Router();
 const redisClient = require("../redis-client");
-const loginHelper = require("../helpers/login");
+const API = require("call-of-duty-api")({
+  platform: "battle",
+  ratelimit: { maxRequests: 2, perMilliseconds: 1000, maxRPS: 2 },
+});
+const auth = require("../auth");
 
 const statsMiddleware = async (req, res, next) => {
   const { user } = req.query;
-  const { type } = req.params;
   try {
     let stringifiedData = await redisClient.getAsync(user);
+    console.log(stringifiedData);
     if (stringifiedData) {
       const data = JSON.parse(stringifiedData);
-      res.send(data.lifetime.mode[type].properties);
+      res.send(data.lifetime);
     } else {
+      console.log("next");
       next();
     }
   } catch (e) {
     console.log(e);
   }
 };
-
-const weaponsMiddleware = async (req, res, next) => {
+lifetimeRouter.use("/", statsMiddleware);
+lifetimeRouter.get("/", async (req, res) => {
   const { user } = req.query;
   try {
-    let stringifiedData = await redisClient.getAsync(user);
-    if (stringifiedData) {
-      const data = JSON.parse(stringifiedData);
-      res.send(data.lifetime["itemData"]);
-    } else {
-      next();
-    }
+    await API.login(auth.username, auth.password);
+    let data = await API.MWwz(user);
+    await redisClient.setAsync(user, 3600, JSON.stringify(data));
+    res.send(data);
   } catch (e) {
     console.log(e);
-  }
-};
-
-lifetimeRouter.use("/stats/:type", statsMiddleware);
-lifetimeRouter.use("/weapons", weaponsMiddleware);
-
-lifetimeRouter.get("/stats/:type", async (req, res) => {
-  const { user } = req.query;
-  const { type } = req.params;
-  try {
-    const data = await loginHelper(user);
-    if (data["lifetime"]) {
-      res.send(data.lifetime.mode[type].properties);
-    } else {
-      res.send(data);
-    }
-  } catch (e) {
-    res.send(e);
-  }
-});
-
-lifetimeRouter.get("/weapons", async (req, res) => {
-  const { user, type } = req.query;
-  try {
-    const data = await loginHelper(user);
-    if (data["lifetime"]) {
-      res.send(data.lifetime["itemData"]);
-    } else {
-      res.send(data);
-    }
-  } catch (e) {
-    res.send(e);
   }
 });
 

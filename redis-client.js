@@ -1,6 +1,9 @@
 const redis = require("redis");
 const { promisify } = require("util");
-const client = redis.createClient(process.env.REDIS_URL);
+
+const REDIS_URL = process.env.REDIS_URL || 6379;
+
+const client = redis.createClient(REDIS_URL);
 
 module.exports = {
   ...client,
