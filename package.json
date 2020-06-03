@@ -1,13 +1,20 @@
 {
   "name": "warzone-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "A callable API for warzone using express and redis caching.",
   "main": "server.js",
-  "scripts": {
-    "start": "nodemon ."
+  "repository": {
+    "url": "https://github.com/aurghya-0/wz-api"
   },
-  "keywords": [],
-  "author": "",
+  "scripts": {
+    "start": "node .",
+    "start:dev": "nodemon ."
+  },
+  "keywords": [
+    "express",
+    "warzone"
+  ],
+  "author": "Aurghyadip Kundu",
   "license": "ISC",
   "dependencies": {
     "call-of-duty-api": "^1.2.0",
