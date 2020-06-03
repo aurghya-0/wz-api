@@ -1,12 +1,11 @@
-var express = require("express");
-var lifetimeRouter = express.Router();
+const express = require("express");
+const lifetimeRouter = express.Router();
 const redisClient = require("../redis-client");
 const loginHelper = require("../helpers/login");
 
 const statsMiddleware = async (req, res, next) => {
   const { user } = req.query;
   const { type } = req.params;
-  console.log(req.params);
   try {
     let stringifiedData = await redisClient.getAsync(user);
     if (stringifiedData) {
@@ -41,7 +40,6 @@ lifetimeRouter.use("/weapons", weaponsMiddleware);
 lifetimeRouter.get("/stats/:type", async (req, res) => {
   const { user } = req.query;
   const { type } = req.params;
-  console.log(req.params);
   try {
     const data = await loginHelper(user);
     if (data["lifetime"]) {
@@ -50,7 +48,6 @@ lifetimeRouter.get("/stats/:type", async (req, res) => {
       res.send(data);
     }
   } catch (e) {
-    console.log(e);
     res.send(e);
   }
 });
@@ -65,7 +62,6 @@ lifetimeRouter.get("/weapons", async (req, res) => {
       res.send(data);
     }
   } catch (e) {
-    console.log(e);
     res.send(e);
   }
 });
